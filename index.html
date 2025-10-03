@@ -9,7 +9,7 @@
     <script type="module">
         // Import the functions you need from the SDKs you need
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics.js";
+        import { getAnalytics, logEvent } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics.js";
 
         const firebaseConfig = {
             apiKey: __FIREBASE_API_KEY__,
@@ -80,6 +80,51 @@
 
 <body class="text-gray-800">
 
+    <script type="module">
+        // Import only the necessary functions for the click handler
+        import { getApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+        import { getAnalytics, logEvent } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics.js";
+
+        let analyticsInstance; 
+        try {
+            const app = getApp();
+            analyticsInstance = getAnalytics(app);
+        } catch (e) {
+            console.error("Firebase app or Analytics not initialized correctly:", e);
+            // If analyticsInstance fails to get, events won't be logged, but the page won't crash.
+        }
+
+        // Only proceed if analyticsInstance was successfully retrieved
+        if (analyticsInstance) {
+            // --- App Store Download Button ---
+            const appStoreButton = document.getElementById('app-store-download-btn');
+            console.log("appStoreButton: " + appStoreButton);
+            if (appStoreButton) {
+                appStoreButton.addEventListener('click', () => {
+                    logEvent(analyticsInstance, 'app_download_click', { // Use analyticsInstance here
+                        platform: 'ios',
+                        button_location: 'hero_section'
+                    });
+                    console.log('Firebase event: app_download_click (iOS)');
+                });
+            }
+
+            // --- Coming to Android Button ---
+            const androidComingSoonButton = document.getElementById('android-coming-soon-btn');
+            if (androidComingSoonButton) {
+                androidComingSoonButton.addEventListener('click', () => {
+                    logEvent(analyticsInstance, 'interest_click', { // Use analyticsInstance here
+                        platform: 'android',
+                        button_location: 'hero_section'
+                    });
+                    console.log('Firebase event: interest_click (Android)');
+                });
+            }
+        } else {
+            console.warn("Firebase Analytics is not active for click tracking.");
+        }
+    </script>
+
     <!-- Header -->
     <header class="bg-gray-900/80 backdrop-blur-sm fixed top-0 left-0 right-0 z-50">
         <div class="container mx-auto px-6 py-4 flex justify-between items-center">
@@ -114,10 +159,13 @@
                     your passion. All in one beautiful app.
                 </p>
                 <div class="mt-10 flex justify-center items-center space-x-4">
-                    <a href="https://apps.apple.com/us/app/alektamovik-your-collection/id6753033229" target="_blank" rel="noopener noreferrer" class="app-store-badge-link">
-                        <img src="./assets/app-store-badge.svg" alt="Download on the App Store" class="app-store-badge-img">
+                    <a id="app-store-download-btn"
+                        href="https://apps.apple.com/us/app/alektamovik-your-collection/id6753033229" target="_blank"
+                        rel="noopener noreferrer" class="app-store-badge-link">
+                        <img src="./assets/app-store-badge.svg" alt="Download on the App Store"
+                            class="app-store-badge-img">
                     </a>
-                    <a href="#"
+                    <a d="android-coming-soon-btn" href="#"
                         class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-lg transition-transform transform hover:scale-105">
                         Coming to Android
                     </a>
