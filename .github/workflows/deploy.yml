@@ -12,11 +12,6 @@ jobs:
       - name: Checkout 
         uses: actions/checkout@v3
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '16'
-
       - name: Inject Firebase Config
         run: |
           sed -i "s|__FIREBASE_API_KEY__|\"${{ secrets.FIREBASE_API_KEY }}\"|g" index.html
